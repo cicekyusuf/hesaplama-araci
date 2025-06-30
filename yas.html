@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaş Hesaplama | Hesaplama Araçları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #2c3e50;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .calculator {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+        }
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background: #f1f9fe;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .result-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .result-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .highlight {
+            color: #e74c3c;
+        }
+        .zodiac-sign {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff8e1;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        .next-birthday {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 15px;
+            }
+            .calculator {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-birthday-cake"></i> Yaş Hesaplama</h1>
+    <p class="description">Doğum tarihinize göre yaşınızı, burcunuzu ve bir sonraki doğum gününüzü hesaplayın</p>
+    
+    <div class="calculator">
+        <div class="form-group">
+            <label for="birthdate">Doğum Tarihiniz</label>
+            <input type="date" id="birthdate" max="">
+        </div>
+        
+        <div class="form-group">
+            <label for="compareDate">Karşılaştırma Tarihi (Opsiyonel)</label>
+            <input type="date" id="compareDate" placeholder="Bugün için boş bırakın">
+        </div>
+        
+        <button onclick="calculateAge()"><i class="fas fa-calculator"></i> YAŞI HESAPLA</button>
+        
+        <div id="result" class="result">
+            <div class="result-title">YAŞ BİLGİLERİNİZ</div>
+            
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-label">Yaşınız</div>
+                    <div id="age" class="result-value highlight"></div>
+                    <div id="age-detail"></div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Burcunuz</div>
+                    <div id="zodiac" class="result-value"></div>
+                    <div id="zodiac-dates" class="zodiac-sign"></div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Doğum Gününüz</div>
+                    <div id="birthday" class="result-value"></div>
+                    <div id="day-of-week"></div>
+                </div>
+            </div>
+            
+            <div class="next-birthday">
+                <div class="result-label">Sonraki Doğum Gününüze Kalan</div>
+                <div id="next-birthday" class="result-value"></div>
+                <div id="next-birthday-date"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde maksimum tarihi bugün yap
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('birthdate').max = today;
+            document.getElementById('compareDate').max = today;
+        });
+
+        function calculateAge() {
+            const birthdate = new Date(document.getElementById('birthdate').value);
+            const compareDateInput = document.getElementById('compareDate').value;
+            
+            if(!document.getElementById('birthdate').value) {
+                alert('Lütfen doğum tarihinizi girin!');
+                return;
+            }
+            
+            // Karşılaştırma tarihini belirle (varsa kullanıcının girdiği, yoksa bugün)
+            const compareDate = compareDateInput ? new Date(compareDateInput) : new Date();
+            
+            // Yaş hesaplama
+            let age = compareDate.getFullYear() - birthdate.getFullYear();
+            const monthDiff = compareDate.getMonth() - birthdate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && compareDate.getDate() < birthdate.getDate())) {
+                age--;
+            }
+            
+            // Tam yaş detayı (yıl, ay, gün)
+            let months = compareDate.getMonth() - birthdate.getMonth();
+            let days = compareDate.getDate() - birthdate.getDate();
+            
+            if (days < 0) {
+                months--;
+                // Önceki ayın gün sayısını bul
+                const tempDate = new Date(compareDate);
+                tempDate.setMonth(tempDate.getMonth() - 1);
+                days += new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, 0).getDate();
+            }
+            
+            if (months < 0) {
+                months += 12;
+            }
+            
+            // Burç hesaplama
+            const zodiac = getZodiac(birthdate.getMonth() + 1, birthdate.getDate());
+            
+            // Sonraki doğum günü
+            const nextBirthday = new Date(compareDate);
+            nextBirthday.setMonth(birthdate.getMonth());
+            nextBirthday.setDate(birthdate.getDate());
+            
+            if (nextBirthday < compareDate) {
+                nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+            }
+            
+            const daysUntilBirthday = Math.ceil((nextBirthday - compareDate) / (1000 * 60 * 60 * 24));
+            
+            // Gün isimleri
+            const daysOfWeek = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+            
+            // Sonuçları göster
+            document.getElementById('age').textContent = age;
+            document.getElementById('age-detail').textContent = `${months} ay ${days} gün`;
+            document.getElementById('zodiac').textContent = zodiac.sign;
+            document.getElementById('zodiac-dates').textContent = `${zodiac.startDate} - ${zodiac.endDate}`;
+            document.getElementById('birthday').textContent = birthdate.toLocaleDateString('tr-TR');
+            document.getElementById('day-of-week').textContent = daysOfWeek[birthdate.getDay()];
+            document.getElementById('next-birthday').textContent = `${daysUntilBirthday} gün`;
+            document.getElementById('next-birthday-date').textContent = nextBirthday.toLocaleDateString('tr-TR');
+            
+            // Sonuç alanını göster
+            document.getElementById('result').style.display = 'block';
+            
+            // Sonuçlara otomatik scroll
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function getZodiac(month, day) {
+            const zodiacSigns = [
+                { name: 'Kova', startDate: '21 Ocak', endDate: '19 Şubat', check: (m,d) => (m === 1 && d >= 21) || (m === 2 && d <= 19) },
+                { name: 'Balık', startDate: '20 Şubat', endDate: '20 Mart', check: (m,d) => (m === 2 && d >= 20) || (m === 3 && d <= 20) },
+                { name: 'Koç', startDate: '21 Mart', endDate: '20 Nisan', check: (m,d) => (m === 3 && d >= 21) || (m === 4 && d <= 20) },
+                { name: 'Boğa', startDate: '21 Nisan', endDate: '21 Mayıs', check: (m,d) => (m === 4 && d >= 21) || (m === 5 && d <= 21) },
+                { name: 'İkizler', startDate: '22 Mayıs', endDate: '21 Haziran', check: (m,d) => (m === 5 && d >= 22) || (m === 6 && d <= 21) },
+                { name: 'Yengeç', startDate: '22 Haziran', endDate: '22 Temmuz', check: (m,d) => (m === 6 && d >= 22) || (m === 7 && d <= 22) },
+                { name: 'Aslan', startDate: '23 Temmuz', endDate: '23 Ağustos', check: (m,d) => (m === 7 && d >= 23) || (m === 8 && d <= 23) },
+                { name: 'Başak', startDate: '24 Ağustos', endDate: '23 Eylül', check: (m,d) => (m === 8 && d >= 24) || (m === 9 && d <= 23) },
+                { name: 'Terazi', startDate: '24 Eylül', endDate: '23 Ekim', check: (m,d) => (m === 9 && d >= 24) || (m === 10 && d <= 23) },
+                { name: 'Akrep', startDate: '24 Ekim', endDate: '22 Kasım', check: (m,d) => (m === 10 && d >= 24) || (m === 11 && d <= 22) },
+                { name: 'Yay', startDate: '23 Kasım', endDate: '21 Aralık', check: (m,d) => (m === 11 && d >= 23) || (m === 12 && d <= 21) },
+                { name: 'Oğlak', startDate: '22 Aralık', endDate: '20 Ocak', check: (m,d) => (m === 12 && d >= 22) || (m === 1 && d <= 20) }
+            ];
+            
+            const foundSign = zodiacSigns.find(sign => sign.check(month, day));
+            return {
+                sign: foundSign.name,
+                startDate: foundSign.startDate,
+                endDate: foundSign.endDate
+            };
+        }
+    </script>
+</body>
+</html>

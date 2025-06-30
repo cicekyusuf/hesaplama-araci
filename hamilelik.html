@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamilelik Hesaplama Aracı</title>
+  <style>
+    :root {
+      --primary-color: #8e24aa;
+      --secondary-color: #6a1b9a;
+      --accent-color: #ba68c8;
+      --background-color: #f3e5f5;
+      --text-color: #4a148c;
+      --card-bg: #ffffff;
+      --error-color: #d32f2f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 30px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: #fafafa;
+      color: var(--text-color);
+    }
+
+    input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.2);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .result-container {
+      margin-top: 30px;
+      padding: 25px;
+      background-color: #f3e5f5;
+      border-radius: 10px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-title {
+      font-weight: 700;
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.3rem;
+    }
+
+    .result-item {
+      margin-bottom: 15px;
+    }
+
+    .result-label {
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+    }
+
+    .result-value {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+
+    .pregnancy-progress {
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent-color);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    .trimester-info {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: rgba(142, 36, 170, 0.1);
+      border-radius: 8px;
+    }
+
+    .error-message {
+      color: var(--error-color);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .info-text {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hamilelik Haftası ve Doğum Tarihi Hesaplama</h1>
+    
+    <form id="hamilelik-form">
+      <div class="form-group">
+        <label for="adet-tarihi">Son Adet Tarihi</label>
+        <input type="date" id="adet-tarihi" required>
+        <div class="error-message" id="tarih-error">Lütfen geçerli bir tarih seçiniz</div>
+        <p class="info-text">Hamilelik hesaplamaları son adet tarihinin ilk gününe göre yapılır</p>
+      </div>
+      
+      <button type="submit">HESAPLA</button>
+    </form>
+    
+    <div class="result-container" id="result-container">
+      <h3 class="result-title">HAMİLELİK BİLGİLERİ</h3>
+      
+      <div class="result-item">
+        <div class="result-label">Hamilelik Haftası:</div>
+        <div class="result-value" id="hamilelik-haftasi">0. hafta</div>
+      </div>
+      
+      <div class="result-item">
+        <div class="result-label">Hamilelik Günü:</div>
+        <div class="result-value" id="hamilelik-gunu">0. gün</div>
+      </div>
+      
+      <div class="pregnancy-progress">
+        <div class="result-label">Hamilelik İlerlemesi</div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div id="progress-text">%0 tamamlandı</div>
+      </div>
+      
+      <div class="result-item">
+        <div class="result-label">Tahmini Doğum Tarihi:</div>
+        <div class="result-value" id="dogum-tarihi">-</div>
+      </div>
+      
+      <div class="result-item">
+        <div class="result-label">1. Trimester Bitişi:</div>
+        <div class="result-value" id="trimester1">-</div>
+      </div>
+      
+      <div class="result-item">
+        <div class="result-label">2. Trimester Bitişi:</div>
+        <div class="result-value" id="trimester2">-</div>
+      </div>
+      
+      <div class="trimester-info">
+        <div class="result-label">Şu Anki Trimester:</div>
+        <div class="result-value" id="current-trimester">-</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('hamilelik-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      hesaplaHamilelik();
+    });
+
+    function hesaplaHamilelik() {
+      // Hata mesajını temizle
+      document.getElementById('tarih-error').style.display = 'none';
+      
+      // Değerleri al
+      const tarih = document.getElementById("adet-tarihi").value;
+      
+      // Validasyon
+      if (!tarih) {
+        document.getElementById("tarih-error").style.display = 'block';
+        return;
+      }
+      
+      const adetTarihi = new Date(tarih);
+      const bugun = new Date();
+      
+      // Geçersiz tarih kontrolü
+      if (adetTarihi > bugun) {
+        document.getElementById("tarih-error").textContent = "Gelecekteki bir tarih seçemezsiniz";
+        document.getElementById("tarih-error").style.display = 'block';
+        return;
+      }
+      
+      // Hesaplamalar
+      const farkGun = Math.floor((bugun - adetTarihi) / (1000 * 60 * 60 * 24));
+      const hafta = Math.floor(farkGun / 7);
+      const gun = farkGun % 7;
+      const ilerleme = Math.min(100, (farkGun / 280) * 100);
+      
+      const dogumTarihi = new Date(adetTarihi);
+      dogumTarihi.setDate(dogumTarihi.getDate() + 280);
+      
+      const trimester1 = new Date(adetTarihi);
+      trimester1.setDate(trimester1.getDate() + 91);
+      
+      const trimester2 = new Date(adetTarihi);
+      trimester2.setDate(trimester2.getDate() + 182);
+      
+      let currentTrimester;
+      if (farkGun < 91) currentTrimester = "1. Trimester (1-13 hafta)";
+      else if (farkGun < 182) currentTrimester = "2. Trimester (14-26 hafta)";
+      else currentTrimester = "3. Trimester (27-40 hafta)";
+      
+      // Sonuçları göster
+      document.getElementById("hamilelik-haftasi").textContent = `${hafta}. hafta`;
+      document.getElementById("hamilelik-gunu").textContent = `${gun}. gün`;
+      document.getElementById("progress-bar").style.width = `${ilerleme}%`;
+      document.getElementById("progress-text").textContent = `%${ilerleme.toFixed(1)} tamamlandı`;
+      document.getElementById("dogum-tarihi").textContent = dogumTarihi.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById("trimester1").textContent = trimester1.toLocaleDateString('tr-TR');
+      document.getElementById("trimester2").textContent = trimester2.toLocaleDateString('tr-TR');
+      document.getElementById("current-trimester").textContent = currentTrimester;
+      
+      // Sonuç container'ını göster
+      document.getElementById("result-container").style.display = 'block';
+      
+      // Sonuçlara otomatik scroll
+      document.getElementById("result-container").scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Bugünün tarihini varsayılan olarak ayarla
+    document.getElementById('adet-tarihi').valueAsDate = new Date();
+  </script>
+</body>
+</html>

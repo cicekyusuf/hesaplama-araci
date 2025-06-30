@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hesaplama Portalı | 21+ Pratik Hesaplama Aracı</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a0ca3;
+      --secondary: #4cc9f0;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --success: #2e7d32;
+      --warning: #f9a825;
+      --danger: #ef6c00;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    .dark-mode {
+      --primary: #4895ef;
+      --primary-dark: #560bad;
+      --light: #121212;
+      --dark: #e0e0e0;
+      --gray: #b0b0b0;
+      --card-bg: #1e1e1e;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      transition: var(--transition);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--card-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 15px 0;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--primary-dark);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--dark);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 80px 0;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      opacity: 0.9;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      background-color: white;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      padding: 15px 20px;
+      font-size: 16px;
+      outline: none;
+      color: var(--dark);
+    }
+
+    .search-box button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0 25px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .search-box button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Categories */
+    .categories {
+      margin-bottom: 30px;
+    }
+
+    .categories h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: var(--primary-dark);
+    }
+
+    .category-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--primary);
+      background: none;
+      color: var(--primary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 14px;
+    }
+
+    .category-btn.active, .category-btn:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    /* Tools Grid */
+    .tools-container {
+      margin-bottom: 50px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .tool-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .tool-image {
+      height: 160px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .tool-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .tool-card:hover .tool-image img {
+      transform: scale(1.05);
+    }
+
+    .tool-content {
+      padding: 20px;
+    }
+
+    .tool-content h3 {
+      margin-bottom: 10px;
+      color: var(--primary-dark);
+    }
+
+    .tool-content p {
+      color: var(--gray);
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .tool-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .tool-category {
+      background-color: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 50px 0 20px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .footer-section h3 {
+      margin-bottom: 20px;
+      font-size: 18px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .footer-section h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background-color: var(--secondary);
+    }
+
+    .footer-section p {
+      margin-bottom: 15px;
+      opacity: 0.8;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+      color: var(--secondary);
+    }
+
+    .contact-info {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .contact-info i {
+      color: var(--secondary);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-links a {
+      color: white;
+      font-size: 18px;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .social-links a:hover {
+      opacity: 1;
+      color: var(--secondary);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .search-box {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero {
+        padding: 60px 0;
+      }
+
+      .search-box input {
+        padding: 12px 15px;
+      }
+
+      .search-box button {
+        padding: 0 15px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <a href="index.html" class="logo">Hesaplama<span>Portalı</span></a>
+        <nav>
+          <div class="nav-links">
+            <a href="#" class="active">Ana Sayfa</a>
+            <a href="vki.html">VKİ</a>
+            <a href="kalori.html">Kalori</a>
+            <a href="kredi.html">Kredi</a>
+            <a href="doviz.html">Döviz</a>
+          </div>
+          <button class="theme-toggle" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Bir Çok Hesaplama Aracı Tek Platformda</h1>
+      <p>Günlük hayatınızı kolaylaştıracak pratik hesaplama araçlarına anında erişim</p>
+      <div class="search-box">
+        <input type="text" placeholder="Araç ara... (VKİ, kredi, kalori vb.)">
+        <button aria-label="Ara"><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Categories -->
+    <section class="categories">
+      <h2>Kategoriler</h2>
+      <div class="category-buttons">
+        <button class="category-btn active" data-category="all">Tümü</button>
+        <button class="category-btn" data-category="health">Sağlık</button>
+        <button class="category-btn" data-category="finance">Finans</button>
+        <button class="category-btn" data-category="math">Matematik</button>
+        <button class="category-btn" data-category="daily">Günlük Yaşam</button>
+      </div>
+    </section>
+
+    <!-- Tools Grid -->
+    <section class="tools-container">
+      <div class="tools-grid" id="tools-grid">
+        <!-- Sağlık Araçları -->
+        <a href="vki.html" class="tool-card" data-category="health">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="VKİ Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>VKİ Hesaplama</h3>
+            <p>Boy ve kilonuza göre ideal kilonuzu hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Sağlık</span>
+              <span><i class="fas fa-star"></i> 4.8</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="kalori.html" class="tool-card" data-category="health">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Kalori Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Kalori Hesaplama</h3>
+            <p>Günlük kalori ihtiyacınızı hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Sağlık</span>
+              <span><i class="fas fa-star"></i> 4.7</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="yas.html" class="tool-card" data-category="health">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Yaş Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Yaş Hesaplama</h3>
+            <p>Doğum tarihinize göre tam yaşınızı hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Sağlık</span>
+              <span><i class="fas fa-star"></i> 4.5</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="hamilelik.html" class="tool-card" data-category="health">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Hamilelik Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Hamilelik Hesaplama</h3>
+            <p>Beklenen doğum tarihini ve hamilelik haftasını hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Sağlık</span>
+              <span><i class="fas fa-star"></i> 4.6</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="yag-orani.html" class="tool-card" data-category="health">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Vücut Yağ Oranı">
+          </div>
+          <div class="tool-content">
+            <h3>Vücut Yağ Oranı</h3>
+            <p>Vücudunuzdaki yağ oranını hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Sağlık</span>
+              <span><i class="fas fa-star"></i> 4.7</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Finans Araçları -->
+        <a href="kredi.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Kredi Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Kredi Hesaplama</h3>
+            <p>Kredi taksitlerini ve toplam geri ödemeyi hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.8</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="faiz.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Faiz Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Faiz Hesaplama</h3>
+            <p>Basit ve bileşik faiz hesaplamaları yapın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.6</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="doviz.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1604594849809-dfedbc827105?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Döviz Çevirici">
+          </div>
+          <div class="tool-content">
+            <h3>Döviz Çevirici</h3>
+            <p>Para birimleri arasında dönüşüm yapın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.7</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="zam.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Zam Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Zam Hesaplama</h3>
+            <p>Maaş zam oranlarını ve yeni maaşı hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.5</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="maas.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Maaş Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Maaş Hesaplama</h3>
+            <p>Net ve brüt maaş hesaplamaları yapın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.4</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="kdv.html" class="tool-card" data-category="finance">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="KDV Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>KDV Hesaplama</h3>
+            <p>KDV dahil ve hariç fiyat hesaplamaları</p>
+            <div class="tool-meta">
+              <span class="tool-category">Finans</span>
+              <span><i class="fas fa-star"></i> 4.3</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Matematik Araçları -->
+        <a href="alan.html" class="tool-card" data-category="math">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Alan Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Alan Hesaplama</h3>
+            <p>Geometrik şekillerin alanlarını hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Matematik</span>
+              <span><i class="fas fa-star"></i> 4.5</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="cevre.html" class="tool-card" data-category="math">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1634733988138-bf2c3a2a13fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Çevre Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Çevre Hesaplama</h3>
+            <p>Geometrik şekillerin çevrelerini hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Matematik</span>
+              <span><i class="fas fa-star"></i> 4.4</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="yuzde.html" class="tool-card" data-category="math">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Yüzde Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Yüzde Hesaplama</h3>
+            <p>Yüzde artış/azalış ve kar hesaplamaları</p>
+            <div class="tool-meta">
+              <span class="tool-category">Matematik</span>
+              <span><i class="fas fa-star"></i> 4.6</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="not.html" class="tool-card" data-category="math">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Not Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Not Hesaplama</h3>
+            <p>Sınav notlarınıza göre ortalama hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Matematik</span>
+              <span><i class="fas fa-star"></i> 4.3</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Günlük Yaşam Araçları -->
+        <a href="yakit.html" class="tool-card" data-category="daily">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Yakıt Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Yakıt Hesaplama</h3>
+            <p>Yolculuk için gereken yakıt maliyetini hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Günlük Yaşam</span>
+              <span><i class="fas fa-star"></i> 4.5</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="indirim.html" class="tool-card" data-category="daily">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="İndirim Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>İndirim Hesaplama</h3>
+            <p>İndirimli fiyatları ve tasarruf miktarını hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Günlük Yaşam</span>
+              <span><i class="fas fa-star"></i> 4.7</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="tarih.html" class="tool-card" data-category="daily">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1517263904808-5dc91e3e7044?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Tarih Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Tarih Hesaplama</h3>
+            <p>İki tarih arasındaki gün sayısını hesaplayın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Günlük Yaşam</span>
+              <span><i class="fas fa-star"></i> 4.4</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="saat.html" class="tool-card" data-category="daily">
+          <div class="tool-image">
+            <img src="https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Saat Hesaplama">
+          </div>
+          <div class="tool-content">
+            <h3>Saat Hesaplama</h3>
+            <p>Saat farkı ve süre hesaplamaları yapın</p>
+            <div class="tool-meta">
+              <span class="tool-category">Günlük Yaşam</span>
+              <span><i class="fas fa-star"></i> 4.2</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Hesaplama Portalı</h3>
+          <p>Günlük hayatınızı kolaylaştırmak için tasarlanmış 21'den fazla hesaplama aracı.</p>
+          <div class="contact-info">
+            <i class="fas fa-envelope"></i>
+            <span>info@hesaplamaportali.com</span>
+          </div>
+          <div class="contact-info">
+            <i class="fas fa-phone"></i>
+            <span>+90 111 11 11</span>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h3>Popüler Araçlar</h3>
+          <ul class="footer-links">
+            <li><a href="vki.html">VKİ Hesaplama</a></li>
+            <li><a href="kalori.html">Kalori Hesaplama</a></li>
+            <li><a href="kredi.html">Kredi Hesaplama</a></li>
+            <li><a href="doviz.html">Döviz Çevirici</a></li>
+            <li><a href="yag-orani.html">Vücut Yağ Oranı</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Hızlı Linkler</h3>
+          <ul class="footer-links">
+            <li><a href="#">Ana Sayfa</a></li>
+            <li><a href="#">Hakkımızda</a></li>
+            <li><a href="#">Gizlilik Politikası</a></li>
+            <li><a href="#">Kullanım Şartları</a></li>
+            <li><a href="#">İletişim</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Sosyal Medya</h3>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 Hesaplama Portalı. Tüm hakları saklıdır. <a href="gizlilik.html">Gizlilik Politikası</a> | <a href="kullanim.html">Kullanım Şartları</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Dark Mode Toggle
+    const themeToggle = document.querySelector('.theme-toggle');
+    const body = document.body;
+
+    // Check for saved theme preference
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark-mode') {
+      body.classList.add('dark-mode');
+      updateThemeIcon();
+    }
+
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark-mode' : '');
+      updateThemeIcon();
+    });
+
+    function updateThemeIcon() {
+      const icon = themeToggle.querySelector('i');
+      if (body.classList.contains('dark-mode')) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    }
+
+    // Category Filtering
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const toolCards = document.querySelectorAll('.tool-card');
+
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Filter tools
+        const category = btn.dataset.category;
+        toolCards.forEach(card => {
+          if (category === 'all' || card.dataset.category === category) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Search Functionality
+    const searchInput = document.querySelector('.search-box input');
+    searchInput.addEventListener('input', () => {
+      const searchTerm = searchInput.value.toLowerCase();
+      
+      toolCards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const desc = card.querySelector('p').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

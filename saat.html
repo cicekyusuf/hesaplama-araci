@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saat Dilimi Dönüştürücü | Hesaplama Araçları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #2c3e50;
+            background-color: #f5f7fa;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .calculator {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        .time-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .time-input input, .time-input select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            flex: 1;
+        }
+        .time-input select {
+            max-width: 250px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f4fc;
+            border-radius: 8px;
+            display: none;
+        }
+        .time-display {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+            color: #2c3e50;
+        }
+        .timezone-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #d6eaf8;
+        }
+        .timezone-item {
+            text-align: center;
+            flex: 1;
+        }
+        .timezone-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .timezone-value {
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .time-difference {
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        @media (max-width: 600px) {
+            .time-input {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .time-input select {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-globe"></i> Saat Dilimi Dönüştürücü</h1>
+    <p class="description">Farklı ülkeler ve saat dilimleri arasında zaman dönüşümü yapın</p>
+    
+    <div class="calculator">
+        <div class="time-input">
+            <input type="datetime-local" id="datetimeInput">
+            <select id="fromTimezone">
+                <option value="UTC">UTC (Evrensel Zaman)</option>
+                <option value="Europe/Istanbul" selected>İstanbul (UTC+3)</option>
+                <option value="America/New_York">New York (UTC-5)</option>
+                <option value="America/Los_Angeles">Los Angeles (UTC-8)</option>
+                <option value="Europe/London">Londra (UTC+0)</option>
+                <option value="Europe/Paris">Paris (UTC+1)</option>
+                <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                <option value="Australia/Sydney">Sidney (UTC+10)</option>
+            </select>
+        </div>
+        
+        <div style="text-align:center; margin:15px 0;">
+            <i class="fas fa-arrow-down" style="font-size:24px; color:#3498db;"></i>
+        </div>
+        
+        <div class="time-input">
+            <input type="text" id="convertedTime" readonly>
+            <select id="toTimezone">
+                <option value="UTC">UTC (Evrensel Zaman)</option>
+                <option value="Europe/Istanbul">İstanbul (UTC+3)</option>
+                <option value="America/New_York" selected>New York (UTC-5)</option>
+                <option value="America/Los_Angeles">Los Angeles (UTC-8)</option>
+                <option value="Europe/London">Londra (UTC+0)</option>
+                <option value="Europe/Paris">Paris (UTC+1)</option>
+                <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                <option value="Australia/Sydney">Sidney (UTC+10)</option>
+            </select>
+        </div>
+        
+        <button onclick="convertTime()"><i class="fas fa-exchange-alt"></i> DÖNÜŞTÜR</button>
+        
+        <div id="result" class="result">
+            <div class="time-display" id="convertedTimeDisplay"></div>
+            
+            <div class="timezone-info">
+                <div class="timezone-item">
+                    <div class="timezone-label">Kaynak Saat Dilimi</div>
+                    <div id="fromTzInfo" class="timezone-value"></div>
+                </div>
+                <div class="timezone-item">
+                    <div class="timezone-label">Hedef Saat Dilimi</div>
+                    <div id="toTzInfo" class="timezone-value"></div>
+                </div>
+            </div>
+            
+            <div class="time-difference" id="timeDifference"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde şu anki zamanı ayarla
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const timezoneOffset = now.getTimezoneOffset() * 60000;
+            const localISOTime = new Date(now - timezoneOffset).toISOString().slice(0, 16);
+            document.getElementById('datetimeInput').value = localISOTime;
+        });
+
+        function convertTime() {
+            const datetimeInput = document.getElementById('datetimeInput').value;
+            const fromTimezone = document.getElementById('fromTimezone').value;
+            const toTimezone = document.getElementById('toTimezone').value;
+            
+            if(!datetimeInput) {
+                alert('Lütfen bir tarih ve saat seçin!');
+                return;
+            }
+            
+            // Tarih nesnesi oluştur
+            const date = new Date(datetimeInput);
+            
+            // Zaman dilimi bilgilerini al
+            const fromTzName = getTimezoneName(fromTimezone);
+            const toTzName = getTimezoneName(toTimezone);
+            
+            // Dönüştürülmüş zamanı hesapla
+            const convertedTime = convertTimeZone(date, fromTimezone, toTimezone);
+            
+            // Sonuçları göster
+            document.getElementById('convertedTime').value = formatDateTime(convertedTime);
+            document.getElementById('convertedTimeDisplay').textContent = formatDateTime(convertedTime, true);
+            document.getElementById('fromTzInfo').textContent = fromTzName;
+            document.getElementById('toTzInfo').textContent = toTzName;
+            
+            // Saat farkını hesapla
+            const diffHours = getTimezoneDiff(fromTimezone, toTimezone);
+            document.getElementById('timeDifference').textContent = 
+                `${fromTzName} ile ${toTzName} arasında ${diffHours} saat fark bulunmaktadır`;
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function convertTimeZone(date, fromZone, toZone) {
+            const options = {
+                timeZone: toZone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            
+            const formatter = new Intl.DateTimeFormat('tr-TR', options);
+            const parts = formatter.formatToParts(date);
+            
+            const result = {};
+            parts.forEach(part => {
+                result[part.type] = part.value;
+            });
+            
+            return new Date(
+                `${result.year}-${result.month}-${result.day}T${result.hour}:${result.minute}:${result.second}`
+            );
+        }
+
+        function formatDateTime(date, includeDay = false) {
+            const options = {
+                weekday: includeDay ? 'long' : undefined,
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            
+            return date.toLocaleString('tr-TR', options);
+        }
+
+        function getTimezoneName(zone) {
+            const names = {
+                'UTC': 'UTC (Evrensel Zaman)',
+                'Europe/Istanbul': 'İstanbul (UTC+3)',
+                'America/New_York': 'New York (UTC-5)',
+                'America/Los_Angeles': 'Los Angeles (UTC-8)',
+                'Europe/London': 'Londra (UTC+0)',
+                'Europe/Paris': 'Paris (UTC+1)',
+                'Asia/Tokyo': 'Tokyo (UTC+9)',
+                'Australia/Sydney': 'Sidney (UTC+10)'
+            };
+            
+            return names[zone] || zone;
+        }
+
+        function getTimezoneDiff(fromZone, toZone) {
+            const now = new Date();
+            const fromTime = now.toLocaleString('tr-TR', { timeZone: fromZone });
+            const toTime = now.toLocaleString('tr-TR', { timeZone: toZone });
+            
+            const diffMs = new Date(fromTime) - new Date(toTime);
+            return Math.round(diffMs / (1000 * 60 * 60));
+        }
+    </script>
+</body>
+</html>

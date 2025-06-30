@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yakıt Hesaplama | Hesaplama Araçları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .calculator {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #e8f4fc;
+            display: none;
+        }
+        .result-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #d6eaf8;
+        }
+        .result-label {
+            color: #7f8c8d;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-size: 18px;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+            .calculator {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-gas-pump"></i> Yakıt Hesaplama</h1>
+    <p class="description">Gidilecek mesafe ve araç bilgilerine göre yakıt maliyetini hesaplayın</p>
+    
+    <div class="calculator">
+        <div class="form-group">
+            <label for="distance">Gidilecek Mesafe (km)</label>
+            <input type="number" id="distance" placeholder="Örnek: 250" min="1" step="1">
+        </div>
+        
+        <div class="form-group">
+            <label for="consumption">Aracın Yakıt Tüketimi (litre/100km)</label>
+            <input type="number" id="consumption" placeholder="Örnek: 7.5" min="1" step="0.1">
+        </div>
+        
+        <div class="form-group">
+            <label for="fuelType">Yakıt Türü</label>
+            <select id="fuelType">
+                <option value="gasoline">Benzin</option>
+                <option value="diesel">Dizel</option>
+                <option value="lpg">LPG</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="fuelPrice">Yakıt Fiyatı (₺/litre)</label>
+            <input type="number" id="fuelPrice" placeholder="Otomatik doldur için yakıt türünü seçin" min="1" step="0.01">
+        </div>
+        
+        <div class="form-group">
+            <label for="passengers">Yolcu Sayısı (Maliyet paylaşımı için)</label>
+            <input type="number" id="passengers" placeholder="Örnek: 4" min="1" value="1">
+        </div>
+        
+        <button onclick="calculateFuel()"><i class="fas fa-calculator"></i> HESAPLA</button>
+        
+        <div id="result" class="result">
+            <div class="result-title">YAKIT MALİYET SONUÇLARI</div>
+            
+            <div class="result-item">
+                <span class="result-label">Toplam Mesafe:</span>
+                <span id="totalDistance" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Yakıt Tüketimi:</span>
+                <span id="totalConsumption" class="result-value"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Toplam Yakıt Maliyeti:</span>
+                <span id="totalCost" class="result-value highlight"></span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Kişi Başı Maliyet:</span>
+                <span id="costPerPerson" class="result-value"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Yakıt türüne göre otomatik fiyat doldurma
+        document.getElementById('fuelType').addEventListener('change', function() {
+            const fuelType = this.value;
+            let defaultPrice = 25.00; // Varsayılan değer
+            
+            // Güncel yakıt fiyatları (örnek değerler)
+            const fuelPrices = {
+                'gasoline': 28.50,
+                'diesel': 26.75,
+                'lpg': 12.40
+            };
+            
+            if(fuelPrices[fuelType]) {
+                defaultPrice = fuelPrices[fuelType];
+            }
+            
+            document.getElementById('fuelPrice').value = defaultPrice.toFixed(2);
+        });
+
+        function calculateFuel() {
+            // Girdileri al
+            const distance = parseFloat(document.getElementById('distance').value);
+            const consumption = parseFloat(document.getElementById('consumption').value);
+            const fuelPrice = parseFloat(document.getElementById('fuelPrice').value);
+            const passengers = parseInt(document.getElementById('passengers').value);
+            
+            // Validasyon
+            if(!distance || !consumption || !fuelPrice || !passengers) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+            
+            if(distance <= 0 || consumption <= 0 || fuelPrice <= 0 || passengers <= 0) {
+                alert('Lütfen geçerli değerler girin!');
+                return;
+            }
+            
+            // Hesaplamalar
+            const fuelNeeded = (distance * consumption) / 100;
+            const totalCost = fuelNeeded * fuelPrice;
+            const costPerPerson = totalCost / passengers;
+            
+            // Sonuçları göster
+            document.getElementById('totalDistance').textContent = distance.toFixed(1) + ' km';
+            document.getElementById('totalConsumption').textContent = fuelNeeded.toFixed(1) + ' litre';
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2) + ' ₺';
+            document.getElementById('costPerPerson').textContent = costPerPerson.toFixed(2) + ' ₺';
+            
+            // Sonuç alanını göster
+            document.getElementById('result').style.display = 'block';
+            
+            // Sonuçlara otomatik scroll
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

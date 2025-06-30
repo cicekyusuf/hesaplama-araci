@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net-Brüt Maaş Hesaplama | Hesaplama Araçları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #2c3e50;
+            background-color: #f5f7fa;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .calculator {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        .toggle-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #3498db;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .toggle-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f4fc;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .result-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .result-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .result-value {
+            font-weight: 700;
+            margin-top: 5px;
+            font-size: 18px;
+        }
+        .deductions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #d6eaf8;
+        }
+        .deduction-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-money-bill-wave"></i> Net-Brüt Maaş Hesaplama</h1>
+    <p class="description">Brüt maaşınızdan net maaşınızı veya net maaşınızdan brüt maaşınızı hesaplayın</p>
+    
+    <div class="calculator">
+        <div class="toggle-buttons">
+            <button id="brutToNetBtn" class="toggle-btn active" onclick="toggleCalculation('brutToNet')">Brüt → Net</button>
+            <button id="netToBrutBtn" class="toggle-btn" onclick="toggleCalculation('netToBrut')">Net → Brüt</button>
+        </div>
+        
+        <div id="brutToNetForm">
+            <div class="form-group">
+                <label for="brutSalary">Brüt Maaş (₺)</label>
+                <input type="number" id="brutSalary" placeholder="Örnek: 15000" min="0">
+            </div>
+        </div>
+        
+        <div id="netToBrutForm" style="display: none;">
+            <div class="form-group">
+                <label for="netSalary">Net Maaş (₺)</label>
+                <input type="number" id="netSalary" placeholder="Örnek: 12000" min="0">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="sgkType">SGK İşçi Payı Oranı</label>
+            <select id="sgkType">
+                <option value="14">Normal (%14)</option>
+                <option value="12.5">Tarım (%12.5)</option>
+                <option value="13.5">Yeraltı Maden (%13.5)</option>
+            </select>
+        </div>
+        
+        <button onclick="calculateSalary()"><i class="fas fa-calculator"></i> HESAPLA</button>
+        
+        <div id="result" class="result">
+            <div class="result-title">MAAŞ HESAPLAMA SONUÇLARI</div>
+            
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-label">Brüt Maaş</div>
+                    <div id="resultBrut" class="result-value"></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Net Maaş</div>
+                    <div id="resultNet" class="result-value"></div>
+                </div>
+            </div>
+            
+            <div class="deductions">
+                <div class="deduction-item">
+                    <span>SGK İşçi Payı:</span>
+                    <span id="sgkEmployee"></span>
+                </div>
+                <div class="deduction-item">
+                    <span>İşsizlik Sigortası:</span>
+                    <span id="unemployment"></span>
+                </div>
+                <div class="deduction-item">
+                    <span>Gelir Vergisi:</span>
+                    <span id="incomeTax"></span>
+                </div>
+                <div class="deduction-item">
+                    <span>Damga Vergisi:</span>
+                    <span id="stampTax"></span>
+                </div>
+                <div class="deduction-item" style="font-weight:500; margin-top:10px;">
+                    <span>Toplam Kesinti:</span>
+                    <span id="totalDeduction"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let calculationType = 'brutToNet';
+        
+        function toggleCalculation(type) {
+            calculationType = type;
+            
+            // Butonları güncelle
+            document.getElementById('brutToNetBtn').classList.toggle('active', type === 'brutToNet');
+            document.getElementById('netToBrutBtn').classList.toggle('active', type === 'netToBrut');
+            
+            // Formları güncelle
+            document.getElementById('brutToNetForm').style.display = type === 'brutToNet' ? 'block' : 'none';
+            document.getElementById('netToBrutForm').style.display = type === 'netToBrut' ? 'block' : 'none';
+            
+            // Sonuçları gizle
+            document.getElementById('result').style.display = 'none';
+        }
+        
+        function calculateSalary() {
+            const sgkRate = parseFloat(document.getElementById('sgkType').value) / 100;
+            const unemploymentRate = 0.01; // %1
+            const stampTaxRate = 0.00759; // %0.759
+            
+            let brutSalary, netSalary;
+            
+            if(calculationType === 'brutToNet') {
+                brutSalary = parseFloat(document.getElementById('brutSalary').value);
+                
+                if(!brutSalary || brutSalary <= 0) {
+                    alert('Lütfen geçerli bir brüt maaş girin!');
+                    return;
+                }
+                
+                // Kesintileri hesapla
+                const sgkEmployee = brutSalary * sgkRate;
+                const unemployment = brutSalary * unemploymentRate;
+                
+                // Gelir vergisi dilimleri (2023 yılı için)
+                let incomeTax = 0;
+                if(brutSalary > 2025000) {
+                    incomeTax = (brutSalary - 2025000) * 0.35 + 902500 * 0.30 + 660000 * 0.27 + 220000 * 0.20 + 32000 * 0.15;
+                } else if(brutSalary > 1125000) {
+                    incomeTax = (brutSalary - 1125000) * 0.30 + 660000 * 0.27 + 220000 * 0.20 + 32000 * 0.15;
+                } else if(brutSalary > 465000) {
+                    incomeTax = (brutSalary - 465000) * 0.27 + 220000 * 0.20 + 32000 * 0.15;
+                } else if(brutSalary > 245000) {
+                    incomeTax = (brutSalary - 245000) * 0.20 + 32000 * 0.15;
+                } else if(brutSalary > 32000) {
+                    incomeTax = (brutSalary - 32000) * 0.15;
+                }
+                
+                const stampTax = brutSalary * stampTaxRate;
+                const totalDeduction = sgkEmployee + unemployment + incomeTax + stampTax;
+                netSalary = brutSalary - totalDeduction;
+                
+                // Sonuçları göster
+                document.getElementById('resultBrut').textContent = formatCurrency(brutSalary);
+                document.getElementById('resultNet').textContent = formatCurrency(netSalary);
+                document.getElementById('sgkEmployee').textContent = formatCurrency(sgkEmployee);
+                document.getElementById('unemployment').textContent = formatCurrency(unemployment);
+                document.getElementById('incomeTax').textContent = formatCurrency(incomeTax);
+                document.getElementById('stampTax').textContent = formatCurrency(stampTax);
+                document.getElementById('totalDeduction').textContent = formatCurrency(totalDeduction);
+                
+            } else {
+                netSalary = parseFloat(document.getElementById('netSalary').value);
+                
+                if(!netSalary || netSalary <= 0) {
+                    alert('Lütfen geçerli bir net maaş girin!');
+                    return;
+                }
+                
+                // Netten brüt hesaplama (yaklaşık)
+                // Bu kısım daha karmaşık bir algoritma gerektirir, basit bir yaklaşım kullanıyoruz
+                let estimatedBrut = netSalary / (1 - (sgkRate + unemploymentRate + 0.20 + stampTaxRate));
+                let prevBrut = 0;
+                let iteration = 0;
+                const maxIterations = 100;
+                const precision = 0.01;
+                
+                // İteratif hesaplama
+                do {
+                    prevBrut = estimatedBrut;
+                    
+                    const sgkEmployee = estimatedBrut * sgkRate;
+                    const unemployment = estimatedBrut * unemploymentRate;
+                    
+                    // Basitleştirilmiş gelir vergisi hesabı
+                    let incomeTax = estimatedBrut * 0.20;
+                    const stampTax = estimatedBrut * stampTaxRate;
+                    
+                    const totalDeduction = sgkEmployee + unemployment + incomeTax + stampTax;
+                    estimatedBrut = netSalary + totalDeduction;
+                    
+                    iteration++;
+                } while(Math.abs(estimatedBrut - prevBrut) > precision && iteration < maxIterations);
+                
+                brutSalary = estimatedBrut;
+                
+                // Kesintileri tekrar hesapla
+                const sgkEmployee = brutSalary * sgkRate;
+                const unemployment = brutSalary * unemploymentRate;
+                let incomeTax = brutSalary * 0.20; // Basitleştirilmiş
+                const stampTax = brutSalary * stampTaxRate;
+                const totalDeduction = sgkEmployee + unemployment + incomeTax + stampTax;
+                
+                // Sonuçları göster
+                document.getElementById('resultBrut').textContent = formatCurrency(brutSalary);
+                document.getElementById('resultNet').textContent = formatCurrency(netSalary);
+                document.getElementById('sgkEmployee').textContent = formatCurrency(sgkEmployee);
+                document.getElementById('unemployment').textContent = formatCurrency(unemployment);
+                document.getElementById('incomeTax').textContent = formatCurrency(incomeTax);
+                document.getElementById('stampTax').textContent = formatCurrency(stampTax);
+                document.getElementById('totalDeduction').textContent = formatCurrency(totalDeduction);
+            }
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('tr-TR', { 
+                style: 'currency', 
+                currency: 'TRY',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+    </script>
+</body>
+</html>

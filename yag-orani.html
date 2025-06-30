@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vücut Yağ Oranı Hesaplama</title>
+  <style>
+    :root {
+      --primary-color: #5d4037;
+      --secondary-color: #8d6e63;
+      --accent-color: #d7ccc8;
+      --background-color: #efebe9;
+      --text-color: #3e2723;
+      --card-bg: #ffffff;
+      --good-color: #2e7d32;
+      --average-color: #f9a825;
+      --high-color: #ef6c00;
+      --very-high-color: #c62828;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(93, 64, 55, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 550px;
+      margin-top: 20px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-color);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: #fafafa;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(215, 204, 200, 0.2);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s;
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .result-container {
+      margin-top: 30px;
+      padding: 25px;
+      background-color: #efebe9;
+      border-radius: 10px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .result-value {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .result-details {
+      margin-top: 20px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #d7ccc8;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .detail-value {
+      font-weight: 600;
+    }
+
+    .error-message {
+      color: var(--very-high-color);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .input-error {
+      border-color: var(--very-high-color);
+    }
+
+    .classification {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f5f5f5;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    .scale {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #616161;
+    }
+
+    .tool-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tool-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .result-value {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tool-image">
+      <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Vücut Yağ Oranı Hesaplama">
+    </div>
+    
+    <h1>Vücut Yağ Oranı Hesaplama</h1>
+    
+    <form id="yag-form">
+      <div class="form-group">
+        <label for="kilo">Kilo (kg)</label>
+        <input type="number" id="kilo" placeholder="Örn: 70" min="30" max="300" required>
+        <div class="error-message" id="kilo-error">Lütfen geçerli bir kilo giriniz (30-300 kg arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="boy">Boy (cm)</label>
+        <input type="number" id="boy" placeholder="Örn: 175" min="100" max="250" required>
+        <div class="error-message" id="boy-error">Lütfen geçerli bir boy giriniz (100-250 cm arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="yas">Yaş</label>
+        <input type="number" id="yas" placeholder="Örn: 30" min="15" max="120" required>
+        <div class="error-message" id="yas-error">Lütfen geçerli bir yaş giriniz (15-120 arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="cinsiyet">Cinsiyet</label>
+        <select id="cinsiyet" required>
+          <option value="erkek">Erkek</option>
+          <option value="kadin">Kadın</option>
+        </select>
+      </div>
+      
+      <button type="submit">HESAPLA</button>
+    </form>
+    
+    <div class="result-container" id="result-container">
+      <h3 class="result-title">VÜCUT YAĞ ORANI SONUCU</h3>
+      <div class="result-value" id="yag-sonuc">%0.00</div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      
+      <div class="scale">
+        <span>Düşük</span>
+        <span>Normal</span>
+        <span>Yüksek</span>
+        <span>Çok Yüksek</span>
+      </div>
+      
+      <div class="classification" id="classification">
+        Sonucunuzu görmek için hesaplama yapın
+      </div>
+      
+      <div class="result-details">
+        <div class="detail-row">
+          <span class="detail-label">Vücut Kitle İndeksi (BMI):</span>
+          <span class="detail-value" id="bmi-sonuc">0.00</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Cinsiyet:</span>
+          <span class="detail-value" id="cinsiyet-sonuc">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Yaş:</span>
+          <span class="detail-value" id="yas-sonuc">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('yag-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      hesaplaYagOrani();
+    });
+
+    function hesaplaYagOrani() {
+      // Hata mesajlarını ve input hatalarını temizle
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('input').forEach(el => el.classList.remove('input-error'));
+      
+      // Değerleri al
+      const kilo = parseFloat(document.getElementById("kilo").value);
+      const boy = parseFloat(document.getElementById("boy").value);
+      const yas = parseInt(document.getElementById("yas").value);
+      const cinsiyet = document.getElementById("cinsiyet").value;
+      const cinsiyetText = cinsiyet === "erkek" ? "Erkek" : "Kadın";
+      
+      // Validasyon
+      let isValid = true;
+      
+      if (isNaN(kilo) || kilo < 30 || kilo > 300) {
+        document.getElementById("kilo-error").style.display = 'block';
+        document.getElementById("kilo").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (isNaN(boy) || boy < 100 || boy > 250) {
+        document.getElementById("boy-error").style.display = 'block';
+        document.getElementById("boy").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (isNaN(yas) || yas < 15 || yas > 120) {
+        document.getElementById("yas-error").style.display = 'block';
+        document.getElementById("yas").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (!isValid) return;
+      
+      // Hesaplamalar
+      const boyMetre = boy / 100;
+      const bmi = kilo / (boyMetre * boyMetre);
+      let yagOrani;
+      
+      if (cinsiyet === "erkek") {
+        yagOrani = (1.20 * bmi) + (0.23 * yas) - 16.2;
+      } else {
+        yagOrani = (1.20 * bmi) + (0.23 * yas) - 5.4;
+      }
+      
+      // Sonuçları sınırla (0-100 arası)
+      yagOrani = Math.max(0, Math.min(100, yagOrani));
+      
+      // Sınıflandırma
+      let classification, color;
+      if (cinsiyet === "erkek") {
+        if (yagOrani < 8) {
+          classification = "Çok Düşük (Atletik)";
+          color = '#2e7d32'; // --good-color
+        } else if (yagOrani < 20) {
+          classification = "Normal (Sağlıklı)";
+          color = '#2e7d32'; // --good-color
+        } else if (yagOrani < 25) {
+          classification = "Hafif Yüksek";
+          color = '#f9a825'; // --average-color
+        } else {
+          classification = "Yüksek (Riskli)";
+          color = '#ef6c00'; // --high-color
+        }
+      } else {
+        if (yagOrani < 21) {
+          classification = "Çok Düşük (Atletik)";
+          color = '#2e7d32'; // --good-color
+        } else if (yagOrani < 33) {
+          classification = "Normal (Sağlıklı)";
+          color = '#2e7d32'; // --good-color
+        } else if (yagOrani < 39) {
+          classification = "Hafif Yüksek";
+          color = '#f9a825'; // --average-color
+        } else {
+          classification = "Yüksek (Riskli)";
+          color = '#ef6c00'; // --high-color
+        }
+      }
+      
+      // Progress bar hesaplama
+      let progressPercentage;
+      if (cinsiyet === "erkek") {
+        progressPercentage = Math.min(100, (yagOrani / 40) * 100);
+      } else {
+        progressPercentage = Math.min(100, (yagOrani / 50) * 100);
+      }
+      
+      // Sonuçları göster
+      document.getElementById("yag-sonuc").textContent = `%${yagOrani.toFixed(2)}`;
+      document.getElementById("yag-sonuc").style.backgroundColor = color;
+      document.getElementById("bmi-sonuc").textContent = bmi.toFixed(2);
+      document.getElementById("cinsiyet-sonuc").textContent = cinsiyetText;
+      document.getElementById("yas-sonuc").textContent = yas;
+      document.getElementById("classification").textContent = classification;
+      document.getElementById("classification").style.backgroundColor = color;
+      document.getElementById("classification").style.color = "white";
+      
+      // Progress bar güncelleme
+      document.getElementById("progress-bar").style.width = `${progressPercentage}%`;
+      document.getElementById("progress-bar").style.backgroundColor = color;
+      
+      // Sonuç container'ını göster
+      document.getElementById("result-container").style.display = 'block';
+      
+      // Sonuçlara otomatik scroll
+      document.getElementById("result-container").scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
+
+

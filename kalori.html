@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Günlük Kalori İhtiyacı Hesaplama</title>
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --secondary-color: #388e3c;
+      --accent-color: #8bc34a;
+      --background-color: #f1f8e9;
+      --text-color: #2e7d32;
+      --error-color: #c62828;
+      --card-bg: #ffffff;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(46, 125, 50, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 550px;
+      margin-top: 20px;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 28px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-color);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: #fafafa;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s;
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .result-container {
+      margin-top: 30px;
+      padding: 25px;
+      background-color: #e8f5e9;
+      border-radius: 10px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .result-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+    
+    .result-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--secondary-color);
+      text-align: center;
+      margin: 15px 0;
+    }
+    
+    .result-details {
+      margin-top: 20px;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #c8e6c9;
+    }
+    
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+    
+    .detail-value {
+      font-weight: 600;
+    }
+    
+    .error-message {
+      color: var(--error-color);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .input-error {
+      border-color: var(--error-color);
+    }
+    
+    .activity-level {
+      margin-top: 15px;
+    }
+    
+    .activity-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .activity-option {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .activity-option:hover {
+      border-color: var(--accent-color);
+    }
+    
+    .activity-option input {
+      width: auto;
+      margin-right: 10px;
+    }
+    
+    .activity-label {
+      font-weight: 500;
+    }
+    
+    .activity-desc {
+      font-size: 13px;
+      color: #666;
+      margin-top: 3px;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .result-value {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Günlük Kalori İhtiyacı Hesaplama</h1>
+    
+    <form id="kalori-form">
+      <div class="form-group">
+        <label for="kalori-kilo">Kilo (kg)</label>
+        <input type="number" id="kalori-kilo" placeholder="Örn: 70" min="30" max="300" required>
+        <div class="error-message" id="kilo-error">Lütfen geçerli bir kilo giriniz (30-300 kg arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="kalori-boy">Boy (cm)</label>
+        <input type="number" id="kalori-boy" placeholder="Örn: 175" min="100" max="250" required>
+        <div class="error-message" id="boy-error">Lütfen geçerli bir boy giriniz (100-250 cm arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="kalori-yas">Yaş</label>
+        <input type="number" id="kalori-yas" placeholder="Örn: 30" min="15" max="120" required>
+        <div class="error-message" id="yas-error">Lütfen geçerli bir yaş giriniz (15-120 arası)</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="kalori-cinsiyet">Cinsiyet</label>
+        <select id="kalori-cinsiyet" required>
+          <option value="erkek">Erkek</option>
+          <option value="kadin">Kadın</option>
+        </select>
+      </div>
+      
+      <div class="form-group activity-level">
+        <label>Fiziksel Aktivite Seviyesi</label>
+        <div class="activity-options">
+          <label class="activity-option">
+            <input type="radio" name="activity" value="1.2" checked>
+            <div>
+              <div class="activity-label">Hareketsiz (Az veya hiç egzersiz yok)</div>
+              <div class="activity-desc">Ofis işi, çok az hareket</div>
+            </div>
+          </label>
+          
+          <label class="activity-option">
+            <input type="radio" name="activity" value="1.375">
+            <div>
+              <div class="activity-label">Hafif Aktif (Haftada 1-3 gün hafif egzersiz)</div>
+              <div class="activity-desc">Günlük yürüyüşler, ev işleri</div>
+            </div>
+          </label>
+          
+          <label class="activity-option">
+            <input type="radio" name="activity" value="1.55">
+            <div>
+              <div class="activity-label">Orta Aktif (Haftada 3-5 gün orta şiddette egzersiz)</div>
+              <div class="activity-desc">Koşu, bisiklet, yüzme gibi aktiviteler</div>
+            </div>
+          </label>
+          
+          <label class="activity-option">
+            <input type="radio" name="activity" value="1.725">
+            <div>
+              <div class="activity-label">Çok Aktif (Haftada 6-7 gün yoğun egzersiz)</div>
+              <div class="activity-desc">Sporcular, fiziksel işler</div>
+            </div>
+          </label>
+          
+          <label class="activity-option">
+            <input type="radio" name="activity" value="1.9">
+            <div>
+              <div class="activity-label">Ekstra Aktif (Çok yoğun egzersiz veya fiziksel iş)</div>
+              <div class="activity-desc">Profesyonel sporcular, ağır fiziksel işler</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      
+      <button type="submit">HESAPLA</button>
+    </form>
+    
+    <div class="result-container" id="result-container">
+      <h3 class="result-title">GÜNLÜK KALORİ İHTİYACINIZ</h3>
+      <div class="result-value" id="kalori-sonuc">0 kalori</div>
+      
+      <div class="result-details">
+        <div class="detail-row">
+          <span class="detail-label">Bazal Metabolizma Hızı (BMR):</span>
+          <span class="detail-value" id="bmr-sonuc">0 kalori</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Aktivite Seviyesi:</span>
+          <span class="detail-value" id="aktivite-sonuc">Hareketsiz</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Kilo Alma (500 kalori fazla):</span>
+          <span class="detail-value" id="kilo-alma">0 kalori</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Kilo Verme (500 kalori az):</span>
+          <span class="detail-value" id="kilo-verme">0 kalori</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('kalori-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      hesaplaKalori();
+    });
+
+    function hesaplaKalori() {
+      // Hata mesajlarını ve input hatalarını temizle
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('input').forEach(el => el.classList.remove('input-error'));
+      
+      // Değerleri al
+      const kilo = parseFloat(document.getElementById("kalori-kilo").value);
+      const boy = parseFloat(document.getElementById("kalori-boy").value);
+      const yas = parseInt(document.getElementById("kalori-yas").value);
+      const cinsiyet = document.getElementById("kalori-cinsiyet").value;
+      const activity = parseFloat(document.querySelector('input[name="activity"]:checked').value);
+      const activityText = document.querySelector('input[name="activity"]:checked').parentElement.querySelector('.activity-label').textContent;
+      
+      // Validasyon
+      let isValid = true;
+      
+      if (isNaN(kilo) || kilo < 30 || kilo > 300) {
+        document.getElementById("kilo-error").style.display = 'block';
+        document.getElementById("kalori-kilo").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (isNaN(boy) || boy < 100 || boy > 250) {
+        document.getElementById("boy-error").style.display = 'block';
+        document.getElementById("kalori-boy").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (isNaN(yas) || yas < 15 || yas > 120) {
+        document.getElementById("yas-error").style.display = 'block';
+        document.getElementById("kalori-yas").classList.add('input-error');
+        isValid = false;
+      }
+      
+      if (!isValid) return;
+      
+      // Hesaplamalar
+      let bmr;
+      if (cinsiyet === "erkek") {
+        bmr = 10 * kilo + 6.25 * boy - 5 * yas + 5;
+      } else {
+        bmr = 10 * kilo + 6.25 * boy - 5 * yas - 161;
+      }
+      
+      const totalCalories = Math.round(bmr * activity);
+      const kiloAlma = totalCalories + 500;
+      const kiloVerme = totalCalories - 500;
+      
+      // Sonuçları göster
+      document.getElementById("kalori-sonuc").textContent = `${totalCalories} kalori`;
+      document.getElementById("bmr-sonuc").textContent = `${Math.round(bmr)} kalori`;
+      document.getElementById("aktivite-sonuc").textContent = activityText;
+      document.getElementById("kilo-alma").textContent = `${kiloAlma} kalori`;
+      document.getElementById("kilo-verme").textContent = `${kiloVerme} kalori`;
+      
+      // Sonuç container'ını göster
+      document.getElementById("result-container").style.display = 'block';
+      
+      // Sonuçlara otomatik scroll
+      document.getElementById("result-container").scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
+
